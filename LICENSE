@@ -48,20 +48,15 @@ a publicly accessible server, gives the public access to the source
 code of the modified version.
 
   An older license, called the Affero General Public License and
-published by Affero, was designed to accomplish similar goals.  This is
-a different license, not a version of the Affero GPL, but Affero has
+published by Affero, was designed to accomplish similar goals.  This is a different license, not a version of the Affero GPL, but Affero has
 released a new version of the Affero GPL which permits relicensing under
 this license.
 
-  The precise terms and conditions for copying, distribution and
+ The precise terms and conditions for copying, distribution and
 modification follow.
 
                        TERMS AND CONDITIONS
-
-  0. Definitions.
-
-  "This License" refers to version 3 of the GNU Affero General Public License.
-
+0. Definitions.  "This License" refers to version 3 of the GNU Affero General Public License.  
   "Copyright" also means copyright-like laws that apply to other kinds of
 works, such as semiconductor masks.
 
