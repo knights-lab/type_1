@@ -144,3 +144,35 @@ Data link https://mothur.org/MiSeqDevelopmentData/
 # 
 
 ```
+
+### Finished the first alignment yesterday
+```
+/project/flatiron2/projects/type_1/data/mock/mock_communities/zymo/ERR2935805/allpath.r201.b6
+```
+
+# Features
+## SHOGUN features
+* max_uncovered_region
+* percent_max_uncovered_region
+* percent_of_genome_covered
+* median_genome_size
+* hits_in_clade
+* unique_counts_of_clade
+* expected_coverage
+* ratio_covered_over_expected
+
+## Mosaic Features
+
+### NCBI Team Approach
+* padded_alignment - coverage with padding
+* coverage_evenness - coverage of the genome should be relatively uniform
+
+### One Codex
+* kmer_distribution - kmer distribution of reads that hit the clade should match the kmer distribution of the full genome
+
+## ChecKM
+* core_genes_for_survival
+
+## decontam - https://microbiomejournal.biomedcentral.com/articles/10.1186/s40168-018-0605-2
+* read_length_test - frequency across samples should be independent of total reads counts of the sample
+* contaminate_read_test - (control vs experimental sample) frequency should be independent
