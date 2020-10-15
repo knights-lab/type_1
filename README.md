@@ -152,17 +152,16 @@ Data link https://mothur.org/MiSeqDevelopmentData/
 
 # Features
 ## SHOGUN features
-* max_uncovered_region
-* percent_max_uncovered_region
-* percent_of_genome_covered
-* median_genome_size
-* hits_in_clade
-* unique_counts_of_clade
-* expected_coverage
-* ratio_covered_over_expected
+* max_uncovered_region - longest stretch of nucleotides in clade that are not covered
+* percent_max_uncovered_region - max_uncovered_region as a percentage of genome length
+* percent_of_genome_covered - percent of genome covered
+* median_genome_size - median size of the genome in the clade
+* hits_in_clade - raw number of reads that hit the sequence
+* unique_counts_of_clade - unique shears of the clade
+* expected_coverage - the expected coverage of the genome given the reads hit it (measure of evenness)
+* ratio_covered_over_expected - ratio of coverage over expected 
 
 ## Mosaic Features
-
 ### NCBI Team Approach
 * padded_alignment - coverage with padding
 * coverage_evenness - coverage of the genome should be relatively uniform
@@ -171,8 +170,8 @@ Data link https://mothur.org/MiSeqDevelopmentData/
 * kmer_distribution - kmer distribution of reads that hit the clade should match the kmer distribution of the full genome
 
 ## ChecKM
-* core_genes_for_survival
+* core_genes_for_survival - core genes of the genome covered (might be too difficult to use)
 
-## decontam - https://microbiomejournal.biomedcentral.com/articles/10.1186/s40168-018-0605-2
+## decontam 
 * read_length_test - frequency across samples should be independent of total reads counts of the sample
 * contaminate_read_test - (control vs experimental sample) frequency should be independent
