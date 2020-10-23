@@ -184,3 +184,4 @@ sftp-config.json
 SETTINGS.json
 !src/lib
 scratch/
+data/
