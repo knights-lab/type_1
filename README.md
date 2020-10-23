@@ -180,3 +180,7 @@ Data link https://mothur.org/MiSeqDevelopmentData/
 ## decontam 
 * read_length_test - frequency across samples should be independent of total reads counts of the sample
 * contaminate_read_test - (control vs experimental sample) frequency should be independent
+
+## Features derived from combined_seqs.fna
+genome_length
+gc_distribution
