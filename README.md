@@ -48,18 +48,20 @@ mkdir fna & mv *.gz fna & cd fna & printf '%s\0' *.gz | xargs -r0 -n 1 -P 16 gun
 ```
 
 # Database
-```
-rsync -rP hillm096@teraminx.cs.umn.edu:/project/flatiron2/ben/projects/SHOGUN/analysis_SHOGUN/data/references/rep82 ./
-```
+# Mock Communities
 
-../../../bin/burst15 -t 16 -q ./combined_seqs.fna -a /project/flatiron2/data/shogun/rep82/burst/rep82.acx -r /project/flatiron2/data/shogun/rep82/burst/rep82.edx -o allpath.b6 -m ALLPATHS -fr -i 0.98
-
-# Available from here
+## fastq dumps
+```
 fastq-dump --skip-technical  --readids --dumpbase --split-files --clip
-fastq-dump --skip-technical  --readids --dumpbase --split-files --clip SRR8073716
-fastq-dump --skip-technical  --readids --dumpbase --split-files --clip ERR3200809; fastq-dump --skip-technical  --readids --dumpbase --split-files --clip ERR2835738;
-fastq-dump --skip-technical  --readids --dumpbase --split-files --clip ERR2935805; fastq-dump --skip-technical  --readids --dumpbase --split-files --clip ERR2984773;
+fastq-dump --skip-technical  --readids --dumpbase --split-files --clip SRR8073716:
+fastq-dump --skip-technical  --readids --dumpbase --split-files --clip ERR3200809;
+fastq-dump --skip-technical  --readids --dumpbase --split-files --clip ERR2835738;
+fastq-dump --skip-technical  --readids --dumpbase --split-files --clip ERR2935805;
+fastq-dump --skip-technical  --readids --dumpbase --split-files --clip ERR2984773;
+```
 
+## fastq dumps dnanexus
+```
 https://dl.dnanex.us/F/D/KVQYkZGb9V8yJ01v7BQfJzJXQF0bbzK670qBxQ3p/CS_1_1.fastq.gz
 https://dl.dnanex.us/F/D/4V6PQvqp5xFYbXGQj8JzVZBvZJyf8zJjZJVGZyF0/CS_1_2.fastq.gz
 https://dl.dnanex.us/F/D/jbf85846j5Zb8ZB14ff0pJBg1jZpQpJ4Xv41FPjB/CS_2_1.fastq.gz
@@ -68,6 +70,8 @@ https://dl.dnanex.us/F/D/JVqpGZ72Zk5pbF2gbQ43y0qX7YQ3pBzJzbJG9jkX/CS_3_1.fastq.g
 https://dl.dnanex.us/F/D/9bjbF5f5f69VzPP1p47xvJy2b948JKv3769bKZX3/CS_3_2.fastq.gz
 https://dl.dnanex.us/F/D/BkbqbxBQQ5GB4xBz31gxV2X0Yz3pKQB14gQBBQ31/CS_4_1.fastq.gz
 https://dl.dnanex.us/F/D/8zvb48vqKgjPG8FjKVZX6XvQ7fZ4JYk3GBvq9fzb/CS_4_2.fastq.gz
+```
+
 
 ```
 # Consolidate and download (xargs used for parallel download/extraction and also to enable entire download)
@@ -76,8 +80,9 @@ cat ftpfilepaths | xargs -n 1 -P 16 wget -q --retry-connrefused --waitretry=1 --
 printf '%s\0' *.gz | xargs -r0 -n 1 -P 16 gunzip
 ```
 
+## location of files
+```
 /project/flatiron2/ben/projects/type_1/bin/burst15
-
 /project/flatiron2/ben/projects/type_1/data/zymo/ERR2935805
 /project/flatiron2/ben/projects/type_1/data/zymo/ERR2984773
 /project/flatiron2/ben/projects/type_1/data/bmock_12/SRR8073716
@@ -89,7 +94,7 @@ printf '%s\0' *.gz | xargs -r0 -n 1 -P 16 gunzip
 /project/flatiron2/ben/projects/type_1/data/mosaic/CS_2
 /project/flatiron2/ben/projects/type_1/data/mosaic/CS_1
 /project/flatiron2/ben/projects/type_1/data/mbarc_26/SRR3656745
-
+```
 
 
 sra_filename
