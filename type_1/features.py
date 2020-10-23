@@ -1,16 +1,30 @@
-from logging import logger
+# from logging import logger
+
+from typing import Tuple
 import csv
+from collections import Counter
+import re
 
 import numpy as np
 
 
-def get_genome_lengths():
-    pass
+def genome_length(seq: str) -> int:
+    return len(seq)
 
 
-def get_frequency_of_nucleotides():
-    pass
+def nucleotide_frequency(seq: str) -> Counter:
+    return Counter(seq)
 
+
+def longest_consecutive_ns(seq: str) -> Tuple[int, int]:
+    long = 0
+    num_groups = 0
+    for r in re.finditer(r'(N)\1+', seq):
+        group = r.group()
+        if len(group) > long:
+            long = len(group)
+        num_groups += 1
+    return long, num_groups
 
 
 def get_coverage_of_microbes(infile, shear, level, parse_taxonomy_from_row=lambda row: row[-1]):
