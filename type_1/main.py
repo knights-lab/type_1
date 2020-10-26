@@ -14,6 +14,7 @@ app = typer.Typer()
 def gen_fasta_features(fasta: Path) -> Generator[FastaFeatures, None, None]:
     with open(fasta) as inf:
         for header, seq in read_fasta(inf):
+            seq = seq.strip().upper()
             length = genome_length(seq)
             freqs = nucleotide_frequency(seq)
             ns, num_groups = longest_consecutive_ns(seq)
