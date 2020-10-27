@@ -18,6 +18,5 @@ for query_file in query_files:
   -i {query_file} \
   -d {shogun_database} \
   -o {base_query_path}/filter \
-  > {base_query_path}/allpath.r202.filter.log 2>&1
-"""
+  > {base_query_path}/allpath.r202.filter.log 2>&1"""
     print(burst_command)
