@@ -1,11 +1,14 @@
-# from logging import logger
-
-from typing import Tuple
+from pathlib import Path
+from typing import Tuple, Generator
 import csv
-from collections import Counter
+from collections import Counter, defaultdict
 import re
 
 import numpy as np
+import pandas as pd
+
+from type_1.utils import read_fasta
+from type_1.models import AlignmentFeatures, FastaFeatures
 
 
 def genome_length(seq: str) -> int:
@@ -27,68 +30,6 @@ def longest_consecutive_ns(seq: str) -> Tuple[int, int]:
     return long, num_groups
 
 
-def get_coverage_of_microbes(infile, shear, level, parse_taxonomy_from_row=lambda row: row[-1]):
-    #Load in the shear df at level
-    shear_df = summarize_bayes_at_level(shear, level=level)
-
-    samples_begin_map = dict()
-    taxa_hits = defaultdict(int)
-
-
-    logger.info("Started the coverage parsing.")
-    with open(infile) as utree_f:
-        csv_embalm = csv.reader(utree_f, delimiter='\t')
-        # qname, lca, confidence, support
-        for num, line in enumerate(csv_embalm):
-            if num % 10000 == 0:
-                logger.info("Parsed %d lines of b6." % num)
-            # TODO confidence/support filter
-            begin = int(line[8])
-            taxaname = parse_taxonomy_from_row(line)
-            taxa_level = taxaname.count(';') + 1
-            if taxa_level >= level:
-                if taxa_level != level:
-                    taxaname = ';'.join(taxaname.split(";")[:level])
-                if taxaname in shear_df.index:
-                    taxa_hits[taxaname] += 1
-                    indx = int(np.floor(begin/100.))
-                    if not taxaname in samples_begin_map:
-                        genome_length = shear_df['genome_length_median'][taxaname]
-                        samples_begin_map[taxaname] = np.zeros(genome_length)
-                    if indx == 0:
-                        samples_begin_map[taxaname][0] += 1
-                    elif indx >= shear_df['genome_length_median'][taxaname]:
-                        samples_begin_map[taxaname][-1] += 1
-                    else:
-                        samples_begin_map[taxaname][indx] += 1
-                        samples_begin_map[taxaname][indx+1] += 1
-                else:
-                    logger.warning("The taxa %s not found." % taxaname)
-
-    xx = np.zeros((len(samples_begin_map), 8))
-    for i, taxaname in enumerate(sorted(samples_begin_map.keys())):
-        if i % 1000 == 0:
-            logger.info("Calculated %d coverages." % i)
-        unique_hits = taxa_hits[taxaname]
-        hits = samples_begin_map[taxaname]
-        coverages = zero_runs(hits)
-        if coverages[0][0] == 0:
-            if coverages[-1][-1] == hits.shape[0]:
-                temp = coverages[:, 1] - coverages[:, 0]
-                coverages = np.concatenate((coverages, np.atleast_2d(np.array([0, temp[0] + temp[-1]]))))
-        max_uncovered_region = np.max(coverages[:, 1] - coverages[:, 0])
-        percent_max_unconvered = max_uncovered_region/shear_df['genome_length_median'][taxaname]
-        percent_covered = np.sum(hits > 0)/shear_df['genome_length_median'][taxaname]
-        unique_counts = shear_df.iloc[:, level-1][taxaname]
-        expected_c = expected_coverage(unique_counts, unique_hits)
-        row = np.array([max_uncovered_region, percent_max_unconvered, percent_covered, shear_df['genome_length_median'][taxaname], unique_hits, unique_counts, expected_c, percent_covered/(expected_c)])
-        row[np.isnan(row)] = 0
-        xx[i] = row
-    df = pd.DataFrame(xx, columns=['max_uncovered_region', 'percent_max_uncovered_region', 'percent_of_genome_covered', 'median_genome_size', 'hits_in_clade', 'unique_counts_of_clade', 'expected_coverage', 'ratio_covered_over_expected'], index=sorted(samples_begin_map.keys()))
-    logger.info("Completed the coverage analysis.")
-    return df
-
-
 def zero_runs(a):
     # Stack Overflow:
     # https://stackoverflow.com/questions/24885092/finding-the-consecutive-zeros-in-a-numpy-array
@@ -100,7 +41,123 @@ def zero_runs(a):
     return ranges
 
 
-def expected_coverage(length_of_genome: int, number_of_trials: int) -> float:
+def get_expected_coverage(length_of_genome: int, number_of_trials: int) -> float:
     # https://math.stackexchange.com/questions/32800/probability-distribution-of-coverage-of-a-set-after-x-independently-randomly
     num = length_of_genome * (1 - np.power((length_of_genome - 1) / length_of_genome, number_of_trials))
     return num / length_of_genome
+
+
+def gen_blast_features(
+    alignment_allpath: Path,
+    df_database_features: pd.DataFrame,
+    padding: int = 100
+) -> Generator[AlignmentFeatures, None, None]:
+    d_reference_name_to_alignments = defaultdict(list)
+    with open(alignment_allpath) as inf:
+        inf_csv = csv.reader(inf, delimiter="\t")
+        for row in inf_csv:
+            # [
+            #   'ERR2935805.R2_218359', read_name
+            #   'GCF_000196035.1', reference_name
+            #   '100.000000', alignment_score
+            #   '65',
+            #   '0',
+            #   '0',
+            #   '1',
+            #   '65',
+            #   '199883', alignment_start
+            #   '199948', alignment_end
+            #   '0',
+            #   '3'
+            # ]
+            reference_name = row[1]
+            alignment = sorted((int(row[8]) - 1, int(row[9]) - 1))
+            d_reference_name_to_alignments[reference_name].append(alignment)
+
+    for reference_name, alignments in d_reference_name_to_alignments.items():
+        # get the reference length
+        query = df_database_features.query(f"assembly_accession == '{reference_name}'")
+        if query.shape[0] != 1:
+            print(f"ERROR WITH QUERY {reference_name}")
+            print(query)
+            continue
+
+        reference_name_length = query.genome_length.iloc[0]
+
+        coverage = np.zeros(shape=reference_name_length, dtype=int)
+        padded_coverage = np.zeros(shape=reference_name_length, dtype=int)
+        for alignment in alignments:
+            end = alignment[1]
+            if end > reference_name_length:
+                end = reference_name_length
+
+            beginning = alignment[0]
+            if beginning < 0:
+                beginning = 0
+
+            coverage[beginning:end] += 1
+
+            padded_end = end + padding
+            if padded_end > reference_name_length:
+                padded_end = reference_name_length
+
+            padded_beginning = end - padding
+            if padded_beginning < 0:
+                padded_beginning = 0
+
+            padded_coverage[padded_beginning:padded_end] += 1
+
+        num_zeros = (coverage == 0).sum()
+
+        hits = len(alignments)
+        percent_coverage = reference_name_length / (1-(num_zeros / reference_name_length))
+
+        expected_coverage = get_expected_coverage(reference_name_length, np.sum(coverage))
+
+        num_zeros_padded = (padded_coverage == 0).sum()
+        percent_padded_coverage = reference_name_length / (1-(num_zeros_padded / reference_name_length))
+
+        bin_count = np.bincount(coverage)
+        probability = bin_count / bin_count.sum()
+        shannon_entropy = -np.sum(probability*np.log2(probability))
+
+        zr = zero_runs(coverage)
+        if zr[0][0] == 0:
+            if zr[-1][-1] == coverage.shape[0]:
+                temp = zr[:, 1] - zr[:, 0]
+                zr = np.concatenate((zr, np.atleast_2d(np.array([0, temp[0] + temp[-1]]))))
+        percent_max_uncovered_region = np.max(zr[:, 1] - zr[:, 0]) / reference_name_length
+
+        largest_pileup = np.max(coverage)
+
+        results = AlignmentFeatures(
+                hits=hits,
+                percent_coverage=percent_coverage,
+                expected_coverage=expected_coverage,
+                percent_padded_coverage=percent_padded_coverage,
+                shannon_entropy=shannon_entropy,
+                percent_max_uncovered_region=percent_max_uncovered_region,
+                largest_pileup=largest_pileup
+            )
+        yield results
+
+
+def gen_fasta_features(fasta: Path) -> Generator[FastaFeatures, None, None]:
+    with open(fasta) as inf:
+        for header, seq in read_fasta(inf):
+            seq = seq.strip().upper()
+            length = genome_length(seq)
+            freqs = nucleotide_frequency(seq)
+            ns, num_groups = longest_consecutive_ns(seq)
+
+            length -= freqs["N"]
+            gc_content = (freqs["G"] + freqs["C"]) / length
+
+            results = FastaFeatures(
+                genome_length=length,
+                num_n_groups=num_groups,
+                consecutive_ns=ns,
+                gc_content=gc_content,
+                assembly_accession=header
+            )
+            yield results

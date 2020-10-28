@@ -1,41 +1,32 @@
 from pathlib import Path
-from typing import Generator
 
 import pandas as pd
 import typer
 
-from type_1.utils import read_fasta
-from type_1.features import genome_length, nucleotide_frequency, longest_consecutive_ns
-from type_1.models import FastaFeatures
+from type_1.features import gen_blast_features, gen_fasta_features
 
 app = typer.Typer()
-
-
-def gen_fasta_features(fasta: Path) -> Generator[FastaFeatures, None, None]:
-    with open(fasta) as inf:
-        for header, seq in read_fasta(inf):
-            seq = seq.strip().upper()
-            length = genome_length(seq)
-            freqs = nucleotide_frequency(seq)
-            ns, num_groups = longest_consecutive_ns(seq)
-
-            length -= freqs["N"]
-            gc_content = (freqs["G"] + freqs["C"]) / length
-
-            results = FastaFeatures(
-                genome_length=length,
-                num_n_groups=num_groups,
-                consecutive_ns=ns,
-                gc_content=gc_content,
-                assembly_accession=header
-            )
-            yield results
 
 
 @app.command()
 def database_fasta(fasta: Path, outf: Path):
     df = pd.DataFrame((model.dict() for model in gen_fasta_features(fasta)))
     df.to_csv(outf)
+
+
+@app.command()
+def features_alignment(database_features: Path, alignment: Path,  outf: Path):
+    df_database_features = pd.read_csv(
+        database_features,
+    )
+
+    df = pd.DataFrame(
+        (model.dict() for model in gen_blast_features(df_database_features=df_database_features, alignment_allpath=alignment))
+    )
+
+    df_merged = df_database_features.join(df, df_database_features, on="assembly_accession", how="left")
+
+    df_merged.to_csv(outf)
 
 
 if __name__ == "__main__":
