@@ -7,7 +7,7 @@ base_path = "/project/flatiron2/ben/projects/type_1/data"
 
 burst_base_directory = "/project/flatiron/data/shogun/rep201_ab/burst/refseq_s3333_d301"
 
-query_files = glob(f"{base_path}/mock_communities/**/combined_seqs.fna", recursive=True)
+query_files = glob(f"{base_path}/mock_communities/**/filter/combined_seqs.fna", recursive=True)
 
 # %%
 for query_file in query_files:
