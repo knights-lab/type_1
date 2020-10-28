@@ -24,7 +24,7 @@ def features_alignment(database_features: Path, alignment: Path,  outf: Path):
         (model.dict() for model in gen_blast_features(df_database_features=df_database_features, alignment_allpath=alignment))
     )
 
-    df_merged = df_database_features.join(df, df_database_features, on="assembly_accession", how="left")
+    df_merged = df_database_features.join(df, df_database_features, by="assembly_accession", how="left")
 
     df_merged.to_csv(outf)
 
