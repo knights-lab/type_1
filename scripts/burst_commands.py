@@ -18,12 +18,12 @@ for query_file in query_files:
   -q {query_file} \
   -a {burst_base_directory}.acx \
   -r {burst_base_directory}.edx \
-  -o {base_query_path}/allpath.r201.b6 \
+  -o {base_query_path}/allpath.r202.b6 \
   -m ALLPATHS \
   -fr \
   -i 0.98 \
   --noprogress \
-  > {base_query_path}/allpath.r201.log 2>&1
+  > {base_query_path}/allpath.r202.log 2>&1
 """
     print(burst_command)
 for query_file in query_files:
