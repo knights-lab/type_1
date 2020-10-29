@@ -13,7 +13,7 @@ for query_file in query_files:
     base_query_path = os.path.dirname(query_file)
     result = re.search(r"/mock_communities/(.*)/filter/allpath.r202.b6", query_file)
     group_1 = result.group(1)
-    rsync_command = f"""rsync -rP {base_query_path}/allpath.r202.b6 ./mock_communities/{group_1}/filter/"""
+    rsync_command = f"""mkdir ./mock_communities/{group_1}/filter & rsync -rP hillm096@teraminx.cs.umn.edu:{base_query_path}/allpath.r202.b6 ./mock_communities/{group_1}/filter/allpath.r202.b6"""
     print(rsync_command)
 
 
