@@ -58,7 +58,7 @@ def gen_blast_features(
         for row in inf_csv:
             # [
             #   'ERR2935805.R2_218359', read_name
-            #   'GCF_000196035.1', reference_name
+            #   'GCF_000196035.1', assembly_accession
             #   '100.000000', alignment_score
             #   '65',
             #   '0',
@@ -70,15 +70,15 @@ def gen_blast_features(
             #   '0',
             #   '3'
             # ]
-            reference_name = row[1]
+            assembly_accession = row[1]
             alignment = sorted((int(row[8]) - 1, int(row[9]) - 1))
-            d_reference_name_to_alignments[reference_name].append(alignment)
+            d_reference_name_to_alignments[assembly_accession].append(alignment)
 
-    for reference_name, alignments in d_reference_name_to_alignments.items():
+    for assembly_accession, alignments in d_reference_name_to_alignments.items():
         # get the reference length
-        query = df_database_features.query(f"assembly_accession == '{reference_name}'")
+        query = df_database_features.query(f"assembly_accession == '{assembly_accession}'")
         if query.shape[0] != 1:
-            print(f"ERROR WITH QUERY {reference_name}")
+            print(f"ERROR WITH QUERY {assembly_accession}")
             print(query)
             continue
 
@@ -131,6 +131,7 @@ def gen_blast_features(
         largest_pileup = np.max(coverage)
 
         results = AlignmentFeatures(
+                assembly_accession=assembly_accession,
                 hits=hits,
                 percent_coverage=percent_coverage,
                 expected_coverage=expected_coverage,

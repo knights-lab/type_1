@@ -15,7 +15,7 @@ def database_fasta(fasta: Path, outf: Path):
 
 
 @app.command()
-def features_alignment(database_features: Path, alignment: Path,  outf: Path):
+def features_alignment(database_features: Path, alignment: Path,  outf: Path) -> None:
     df_database_features = pd.read_csv(
         database_features,
         index_col=0
