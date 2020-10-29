@@ -1,20 +1,20 @@
-import os
-import pathlib
-from typing import Union
-from collections import Counter, defaultdict
-import csv
+from pathlib import Path
+
 
 import pytest
-import numpy as np
 
-from type_1.features import get_expected_coverage, zero_runs
-from type_1.utils import read_fasta
+from type_1.main import features_alignment
 
 
 @pytest.fixture
-def alignment_allpath() -> Union[str, pathlib.Path]:
-    return os.path.join("fixtures", "allpath.r202.head.b6")
+def alignment_allpath() -> Path:
+    return Path("fixtures") / Path("allpath.r202.head.b6")
+
+@pytest.fixture()
+def database_features() -> Path:
+    return Path("fixtures") / Path("db_features.csv")
 
 
-def test_genome_length(alignment_allpath):
-    pass
+def alignment_length(alignment_allpath, database_features, tmp_path):
+    outf = tmp_path / Path("features.txt")
+    features_alignment(database_features=database_features, alignment=alignment_allpath, outf=outf)

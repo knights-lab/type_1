@@ -11,6 +11,7 @@ class FastaFeatures(BaseModel):
 
 
 class AlignmentFeatures(BaseModel):
+    assembly_accession: str
     hits: int
     percent_coverage: float
     expected_coverage: float
