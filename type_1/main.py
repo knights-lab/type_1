@@ -18,13 +18,14 @@ def database_fasta(fasta: Path, outf: Path):
 def features_alignment(database_features: Path, alignment: Path,  outf: Path):
     df_database_features = pd.read_csv(
         database_features,
+        index_col=0
     )
 
     df = pd.DataFrame(
         (model.dict() for model in gen_blast_features(df_database_features=df_database_features, alignment_allpath=alignment))
     )
 
-    df_merged = df_database_features.join(df, df_database_features, on="assembly_accession", how="left")
+    df_merged = pd.merge(df, df_database_features, on="assembly_accession", how="left")
 
     df_merged.to_csv(outf)
 
