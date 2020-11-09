@@ -184,3 +184,17 @@ Data link https://mothur.org/MiSeqDevelopmentData/
 ## Features derived from combined_seqs.fna
 genome_length
 gc_distribution
+
+
+# 
+
+
+```
+general:
+        fasta: blank.txt
+        taxonomy: taxmap.tsv
+        shear: sheared_bayes.tsv
+burst: burst/combined_seqs
+filter: filter/combined_seqs.filtered
+
+```

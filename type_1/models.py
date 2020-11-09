@@ -7,8 +7,6 @@ class FastaFeatures(BaseModel):
     num_n_groups: int
     consecutive_ns: int
     assembly_accession: str
-    unique_counts: int
-
 
 class AlignmentFeatures(BaseModel):
     assembly_accession: str
