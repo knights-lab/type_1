@@ -28,7 +28,7 @@ for b6_file in b6_files:
 --aligner burst
 --level species \
 --no-capitalist \
--o {base_path}/shogun.taxonomy.r202.txt \
+--output {base_path}/shogun.taxonomy.r202.txt \
 > {base_path}/shogun.taxonomy.r202.log 2>&1"""
     print(command_taxonomy)
 
@@ -37,6 +37,6 @@ for b6_file in b6_files:
 --database {shogun_db} \
 --aligner burst
 --level species \
--o {base_path}/shogun.capitalist.r202.txt \
+--output {base_path}/shogun.capitalist.r202.txt \
 > {base_path}/shogun.capitalist.r202.log 2>&1"""
     print(command_capitalist)
