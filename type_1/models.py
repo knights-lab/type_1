@@ -8,6 +8,7 @@ class FastaFeatures(BaseModel):
     consecutive_ns: int
     assembly_accession: str
 
+
 class AlignmentFeatures(BaseModel):
     assembly_accession: str
     hits: int
