@@ -3,11 +3,11 @@ from glob import glob
 import os
 
 # %%
-base_path = "/project/flatiron2/ben/projects/type_1/data"
+base_path = "/mnt/btrfs/data/type_1/species_mc"
 
-shogun_db = "/project/flatiron/data/shogun/rep202_ab"
+shogun_db = "/mnt/btrfs/data/shogun/rep202_ab"
 
-b6_files = glob(f"{base_path}/mock_communities/**/filter/allpath.r202.b6", recursive=True)
+b6_files = glob(f"{base_path}/*/filter/allpath.r202.b6", recursive=True)
 
 # %%
 for b6_file in b6_files:
@@ -17,40 +17,40 @@ for b6_file in b6_files:
 --input {b6_file} \
 --database {shogun_db} \
 --level species \
---taxonomy_mapping \
+--taxonomy mapping \
 --output {base_path}/coverage.r202.txt \
 > {base_path}/shogun.coverage.r202.log 2>&1"""
     print(command_coverage)
 
-    command_taxonomy = f"""/usr/bin/time -v shogun assign_taxonomy \
---input {b6_file} \
---database {shogun_db} \
---aligner burst \
---no-capitalist \
---output {base_path}/shogun.taxonomy.r202.txt \
-> {base_path}/shogun.taxonomy.r202.log 2>&1"""
-    print(command_taxonomy)
-
-    command_strain_taxonomy = f"""/usr/bin/time -v shogun redistribute \
---input {base_path}/shogun.taxonomy.r202.txt \
---database {shogun_db} \
---level strain \
---output {base_path}/shogun.taxonomy.strain.r202.txt \
-> {base_path}/shogun.taxonomy.r202.strain.log 2>&1"""
-    print(command_strain_taxonomy)
-
-    command_species_taxonomy = f"""/usr/bin/time -v shogun redistribute \
---input {base_path}/shogun.taxonomy.r202.txt \
---database {shogun_db} \
---level species \
---output {base_path}/shogun.taxonomy.species.r202.txt \
-> {base_path}/shogun.taxonomy.r202.species.log 2>&1"""
-    print(command_species_taxonomy)
-
-    command_capitalist = f"""/usr/bin/time -v shogun assign_taxonomy \
---input {b6_file} \
---database {shogun_db} \
---aligner burst \
---output {base_path}/shogun.capitalist.r202.txt \
-> {base_path}/shogun.capitalist.r202.log 2>&1"""
-    print(command_capitalist)
+#     command_taxonomy = f"""/usr/bin/time -v shogun assign_taxonomy \
+# --input {b6_file} \
+# --database {shogun_db} \
+# --aligner burst \
+# --no-capitalist \
+# --output {base_path}/shogun.taxonomy.r202.txt \
+# > {base_path}/shogun.taxonomy.r202.log 2>&1"""
+#     print(command_taxonomy)
+#
+#     command_strain_taxonomy = f"""/usr/bin/time -v shogun redistribute \
+# --input {base_path}/shogun.taxonomy.r202.txt \
+# --database {shogun_db} \
+# --level strain \
+# --output {base_path}/shogun.taxonomy.strain.r202.txt \
+# > {base_path}/shogun.taxonomy.r202.strain.log 2>&1"""
+#     print(command_strain_taxonomy)
+#
+#     command_species_taxonomy = f"""/usr/bin/time -v shogun redistribute \
+# --input {base_path}/shogun.taxonomy.r202.txt \
+# --database {shogun_db} \
+# --level species \
+# --output {base_path}/shogun.taxonomy.species.r202.txt \
+# > {base_path}/shogun.taxonomy.r202.species.log 2>&1"""
+#     print(command_species_taxonomy)
+#
+#     command_capitalist = f"""/usr/bin/time -v shogun assign_taxonomy \
+# --input {b6_file} \
+# --database {shogun_db} \
+# --aligner burst \
+# --output {base_path}/shogun.capitalist.r202.txt \
+# > {base_path}/shogun.capitalist.r202.log 2>&1"""
+#     print(command_capitalist)
