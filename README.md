@@ -198,3 +198,19 @@ burst: burst/combined_seqs
 filter: filter/combined_seqs.filtered
 
 ```
+
+### Working with the alignments
+
+Location on superglass
+```
+/mnt/btrfs/data/type_1/mock_communities
+```
+
+Steps for completion
+* download
+* quality control
+* filter
+* align
+* labels
+
+
