@@ -47,6 +47,11 @@ def get_expected_coverage(length_of_genome: int, number_of_trials: int) -> float
     return num / length_of_genome
 
 
+def get_coverage(length_of_genome: int, num_zeros: int) -> float:
+    coverage = length_of_genome / (1-(num_zeros / length_of_genome))
+    return coverage
+
+
 def gen_blast_features(
     alignment_allpath: Path,
     df_database_features: pd.DataFrame,
@@ -109,13 +114,15 @@ def gen_blast_features(
 
         num_zeros = (coverage == 0).sum()
 
+        # num zeros
         hits = len(alignments)
-        percent_coverage = reference_name_length / (1-(num_zeros / reference_name_length))
+        percent_coverage = get_coverage(reference_name_length, num_zeros)
 
         expected_coverage = get_expected_coverage(reference_name_length, np.sum(coverage))
 
+        # num zeros padded
         num_zeros_padded = (padded_coverage == 0).sum()
-        percent_padded_coverage = reference_name_length / (1-(num_zeros_padded / reference_name_length))
+        percent_padded_coverage = get_coverage(reference_name_length, num_zeros_padded)
 
         bin_count = np.bincount(coverage)
         probability = bin_count / bin_count.sum()
@@ -151,7 +158,8 @@ def gen_fasta_features(fasta: Path) -> Generator[FastaFeatures, None, None]:
             freqs = nucleotide_frequency(seq)
             ns, num_groups = longest_consecutive_ns(seq)
 
-            length -= freqs["N"]
+            # we can't do this, as burst will never align to ns because of penalties
+            # length -= freqs["N"]
             gc_content = (freqs["G"] + freqs["C"]) / length
 
             results = FastaFeatures(
