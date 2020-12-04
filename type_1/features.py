@@ -126,6 +126,7 @@ def gen_blast_features(
 
         bin_count = np.bincount(coverage)
         probability = bin_count / bin_count.sum()
+        # TODO: this is occasionally undefined
         shannon_entropy = -np.sum(probability*np.log2(probability))
 
         zr = zero_runs(coverage)
@@ -133,6 +134,8 @@ def gen_blast_features(
             if zr[-1][-1] == coverage.shape[0]:
                 temp = zr[:, 1] - zr[:, 0]
                 zr = np.concatenate((zr, np.atleast_2d(np.array([0, temp[0] + temp[-1]]))))
+
+        # TODO: sometimes this is 2?
         percent_max_uncovered_region = np.max(zr[:, 1] - zr[:, 0]) / reference_name_length
 
         largest_pileup = np.max(coverage)
