@@ -47,8 +47,8 @@ def get_expected_coverage(length_of_genome: int, number_of_trials: int) -> float
     return num / length_of_genome
 
 
-def get_coverage(length_of_genome: int, num_zeros: int) -> float:
-    coverage = length_of_genome / (1-(num_zeros / length_of_genome))
+def get_coverage(length_of_genome: int, num_nonzeros: int) -> float:
+    coverage = num_nonzeros / length_of_genome
     return coverage
 
 
@@ -112,17 +112,17 @@ def gen_blast_features(
 
             padded_coverage[padded_beginning:padded_end] += 1
 
-        num_zeros = (coverage == 0).sum()
+        nonzeros = (coverage > 0).sum()
 
         # num zeros
         hits = len(alignments)
-        percent_coverage = get_coverage(reference_name_length, num_zeros)
+        percent_coverage = get_coverage(reference_name_length, nonzeros)
 
         expected_coverage = get_expected_coverage(reference_name_length, np.sum(coverage))
 
         # num zeros padded
-        num_zeros_padded = (padded_coverage == 0).sum()
-        percent_padded_coverage = get_coverage(reference_name_length, num_zeros_padded)
+        nonzeros_padded = (padded_coverage > 0).sum()
+        percent_padded_coverage = get_coverage(reference_name_length, nonzeros_padded)
 
         bin_count = np.bincount(coverage)
         probability = bin_count / bin_count.sum()
@@ -141,8 +141,11 @@ def gen_blast_features(
                 assembly_accession=assembly_accession,
                 hits=hits,
                 percent_coverage=percent_coverage,
-                expected_coverage=expected_coverage,
+                mean_coverage=np.mean(coverage),
+                sd_coverage=np.std(coverage),
                 percent_padded_coverage=percent_padded_coverage,
+                mean_padded_coverage=np.mean(padded_coverage),
+                expected_percent_coverage=expected_coverage,
                 shannon_entropy=shannon_entropy,
                 percent_max_uncovered_region=percent_max_uncovered_region,
                 largest_pileup=largest_pileup
@@ -154,16 +157,17 @@ def gen_fasta_features(fasta: Path) -> Generator[FastaFeatures, None, None]:
     with open(fasta) as inf:
         for header, seq in read_fasta(inf):
             seq = seq.strip().upper()
-            length = genome_length(seq)
+            total_genome_length = genome_length(seq)
             freqs = nucleotide_frequency(seq)
             ns, num_groups = longest_consecutive_ns(seq)
 
             # we can't do this, as burst will never align to ns because of penalties
-            # length -= freqs["N"]
-            gc_content = (freqs["G"] + freqs["C"]) / length
+            ungapped_genome_length = total_genome_length - freqs["N"]
+            gc_content = (freqs["G"] + freqs["C"]) / total_genome_length
 
             results = FastaFeatures(
-                genome_length=length,
+                total_genome_length=total_genome_length,
+                ungapped_genome_length=ungapped_genome_length,
                 num_n_groups=num_groups,
                 consecutive_ns=ns,
                 gc_content=gc_content,

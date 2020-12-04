@@ -12,7 +12,7 @@ def alignment_allpath() -> Path:
 
 @pytest.fixture
 def alignment_allpath_coverage() -> Path:
-    return Path("fixtures") / Path("allpath.glitch.b6")
+    return Path("fixtures") / Path("allpath.coverage.ungapped.b6")
 
 
 @pytest.fixture()
