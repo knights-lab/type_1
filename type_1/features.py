@@ -124,7 +124,8 @@ def gen_blast_features(
         nonzeros_padded = (padded_coverage > 0).sum()
         percent_padded_coverage = get_coverage(reference_name_length, nonzeros_padded)
 
-        bin_count = np.bincount(coverage)
+        # windows for bins
+        bin_count = np.bincount(coverage + 1)
         probability = bin_count / bin_count.sum()
         # TODO: this is occasionally undefined
         shannon_entropy = -np.sum(probability*np.log2(probability))
