@@ -31,3 +31,5 @@ class AlignmentFeatures(BaseModel):
     percent_max_uncovered_region: float
     # TODO: Should always be an integer greater than 0
     largest_pileup: int
+
+

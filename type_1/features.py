@@ -48,8 +48,19 @@ def get_expected_coverage(length_of_genome: int, number_of_trials: int) -> float
 
 
 def get_coverage(length_of_genome: int, num_nonzeros: int) -> float:
-    coverage = num_nonzeros / length_of_genome
-    return coverage
+    if length_of_genome <= num_nonzeros:
+        return 1.
+    else:
+        coverage = num_nonzeros / length_of_genome
+        return coverage
+
+
+def get_shannon_entropy(coverage: np.ndarray) -> float:
+    bin_count = np.bincount(coverage)
+    probability = bin_count[bin_count > 0] / bin_count.sum()
+    # TODO: this is occasionally undefined
+    shannon_entropy = -np.sum(probability*np.log2(probability))
+    return shannon_entropy
 
 
 def gen_blast_features(
@@ -87,7 +98,7 @@ def gen_blast_features(
             print(query)
             continue
 
-        reference_name_length = query.genome_length.iloc[0]
+        reference_name_length = query.total_genome_length.iloc[0]
 
         coverage = np.zeros(shape=reference_name_length, dtype=int)
         padded_coverage = np.zeros(shape=reference_name_length, dtype=int)
@@ -125,10 +136,7 @@ def gen_blast_features(
         percent_padded_coverage = get_coverage(reference_name_length, nonzeros_padded)
 
         # windows for bins
-        bin_count = np.bincount(coverage + 1)
-        probability = bin_count / bin_count.sum()
-        # TODO: this is occasionally undefined
-        shannon_entropy = -np.sum(probability*np.log2(probability))
+        shannon_entropy = get_shannon_entropy(coverage)
 
         zr = zero_runs(coverage)
         if zr[0][0] == 0:

@@ -10,6 +10,7 @@ from type_1.main import features_alignment
 def alignment_allpath() -> Path:
     return Path("fixtures") / Path("allpath.r202.head.b6")
 
+
 @pytest.fixture
 def alignment_allpath_coverage() -> Path:
     return Path("fixtures") / Path("allpath.coverage.ungapped.b6")
