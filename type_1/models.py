@@ -1,4 +1,24 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
+
+import numpy as np
+
+
+def between_zero_and_one(value: float) -> float:
+    if 0 < value > 1:
+        raise ValueError(f"Value {value} is not <= 0 and >= 1")
+    return value
+
+
+def greater_than_zero(value: float) -> float:
+    if value <= 0:
+        raise ValueError(f"Value {value} is not > 0.")
+    return value
+
+
+def is_finite(value: float) -> float:
+    if not np.isfinite(value):
+        raise ValueError(f"Value {value} is not finite")
+    return value
 
 
 class FastaFeatures(BaseModel):
@@ -13,23 +33,25 @@ class FastaFeatures(BaseModel):
 class AlignmentFeatures(BaseModel):
     assembly_accession: str
     hits: int
-    # TODO: This value should always be between 0 and 1
     percent_coverage: float
-    # TODO: This value should always be greater than 0
     mean_coverage: float
-    # TODO: Make sure this is not undefined
     sd_coverage: float
-    # TODO: This value should always be between 0 and 1
     percent_padded_coverage: float
-    # TODO: This value should always be greater than 0
     mean_padded_coverage: float
-    # TODO: This value should always be between 0 and 1
     expected_percent_coverage: float
-    # TODO: This value should always be defined
     shannon_entropy: float
-    # TODO: This value should always be between 0 and 1 (sometimes it is two)
     percent_max_uncovered_region: float
-    # TODO: Should always be an integer greater than 0
     largest_pileup: int
+
+    _between_zero_and_one = validator(
+        'percent_coverage',
+        'percent_padded_coverage',
+        'expected_percent_coverage',
+        'percent_max_uncovered_region', allow_reuse=True)(between_zero_and_one)
+    _greater_than_zero = validator(
+        'mean_coverage',
+        'mean_padded_coverage',
+        'largest_pileup', allow_reuse=True)(greater_than_zero)
+    _is_finite = validator('sd_coverage', 'shannon_entropy', allow_reuse=True)(is_finite)
 
 
