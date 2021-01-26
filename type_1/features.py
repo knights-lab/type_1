@@ -58,7 +58,6 @@ def get_coverage(length_of_genome: int, num_nonzeros: int) -> float:
 def get_shannon_entropy(coverage: np.ndarray) -> float:
     bin_count = np.bincount(coverage)
     probability = bin_count[bin_count > 0] / bin_count.sum()
-    # TODO: this is occasionally undefined
     shannon_entropy = -np.sum(probability*np.log2(probability))
     return shannon_entropy
 
