@@ -16,6 +16,6 @@ for b6_file in b6_files:
     command_coverage = f"""/usr/bin/time -v python /mnt/nvidia/pkr/code/type_1/type_1/main.py features-alignment \
 {db_features} \
 {b6_file} \
-{base_path}/t1.coverage.r202.txt \
-> {base_path}/t1.coverage.t1.r202.log 2>&1"""
+{base_path}/t1.coverage.updated.gtdb95.txt \
+> {base_path}/t1.coverage.update.gtdb95.log 2>&1"""
     print(command_coverage)
