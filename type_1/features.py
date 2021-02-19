@@ -116,7 +116,7 @@ def gen_blast_features(
         padded_coverage = np.zeros(shape=reference_name_length, dtype=int)
 
         np_alignments_beginning = np.array([alignment[0] for alignment in alignments], dtype=int)
-        binned_coverage = get_binned_coverage(np_alignments_beginning, reference_name_length)
+        binned_coverage = get_binned_coverage(np_alignments_beginning, reference_name_length, num_bins=num_bins)
 
         for alignment in alignments:
             end = alignment[1]
