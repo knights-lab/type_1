@@ -213,4 +213,10 @@ Steps for completion
 * align
 * labels
 
+Downloading the strains:
+
+# https://www.ncbi.nlm.nih.gov/datasets/docs/command-line-start/
+
+This didn't work, trying the next thing.
+
 

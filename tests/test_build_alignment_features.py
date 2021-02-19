@@ -1,8 +1,11 @@
 from pathlib import Path
 
+import numpy as np
+
 import pytest
 
 from type_1.main import features_alignment
+from type_1.features import get_binned_coverage
 from type_1.models import AlignmentFeatures
 
 
@@ -63,3 +66,14 @@ def test_coverage_greater_than_one():
             percent_max_uncovered_region=1,
             largest_pileup=1
         )
+
+
+def test_binned_coverage():
+    genome_size = 10_041
+    num_reads = 100
+    num_bins = 10
+    x = np.random.randint(0, genome_size, size=(num_reads,))
+
+    hist = get_binned_coverage(x, genome_size, num_bins=num_bins)
+
+    assert hist.shape[0] == num_bins

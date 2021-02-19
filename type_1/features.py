@@ -62,10 +62,23 @@ def get_shannon_entropy(coverage: np.ndarray) -> float:
     return shannon_entropy
 
 
+def get_binned_coverage(alignments: np.ndarray, genome_length: int, num_bins=1_000) -> np.ndarray:
+    # bins = np.linspace(0, coverage.shape[0], num=num_bins + 1, endpoint=True, dtype=np.int)
+    # counts = np.diff(bins)
+    #
+    # binned_hits = np.add.reduceat(coverage, bins[:-1])
+    # coverage = get_coverage(num_bins, binned_hits)
+    # return means, coverage
+    bins = np.linspace(0, genome_length, num=num_bins + 1)
+    hist, _ = np.histogram(alignments, bins=bins)
+    return hist
+
+
 def gen_blast_features(
     alignment_allpath: Path,
     df_database_features: pd.DataFrame,
-    padding: int = 100
+    padding: int = 100,
+    num_bins: int = 10_000,
 ) -> Generator[AlignmentFeatures, None, None]:
     d_reference_name_to_alignments = defaultdict(list)
     with open(alignment_allpath) as inf:
@@ -101,6 +114,10 @@ def gen_blast_features(
 
         coverage = np.zeros(shape=reference_name_length, dtype=int)
         padded_coverage = np.zeros(shape=reference_name_length, dtype=int)
+
+        np_alignments_beginning = np.array([alignment[0] for alignment in alignments], dtype=int)
+        binned_coverage = get_binned_coverage(np_alignments_beginning, reference_name_length)
+
         for alignment in alignments:
             end = alignment[1]
             if end > reference_name_length:
@@ -130,6 +147,10 @@ def gen_blast_features(
 
         expected_coverage = get_expected_coverage(reference_name_length, np.sum(coverage))
 
+        # binned coverage stats
+        nonzeros_binned = (binned_coverage > 0).sum()
+        percent_binned_coverage = get_coverage(num_bins, nonzeros_binned)
+
         # num zeros padded
         nonzeros_padded = (padded_coverage > 0).sum()
         percent_padded_coverage = get_coverage(reference_name_length, nonzeros_padded)
@@ -147,6 +168,8 @@ def gen_blast_features(
         percent_max_uncovered_region = np.max(zr[:, 1] - zr[:, 0]) / reference_name_length
 
         largest_pileup = np.max(coverage)
+        largest_padded_pileup = np.max(padded_coverage)
+        largest_binned_pileup = np.max(binned_coverage)
 
         results = AlignmentFeatures(
                 assembly_accession=assembly_accession,
@@ -156,10 +179,16 @@ def gen_blast_features(
                 sd_coverage=np.std(coverage),
                 percent_padded_coverage=percent_padded_coverage,
                 mean_padded_coverage=np.mean(padded_coverage),
+                sd_padded_coverage=np.std(padded_coverage),
+                percent_binned_coverage=percent_binned_coverage,
+                mean_binned_coverage=np.mean(binned_coverage),
+                sd_binned_coverage=np.std(binned_coverage),
                 expected_percent_coverage=expected_coverage,
                 shannon_entropy=shannon_entropy,
                 percent_max_uncovered_region=percent_max_uncovered_region,
-                largest_pileup=largest_pileup
+                largest_pileup=largest_pileup,
+                largest_padded_pileup=largest_padded_pileup,
+                largest_binned_pileup=largest_binned_pileup
             )
         yield results
 
