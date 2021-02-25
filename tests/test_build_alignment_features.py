@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 from type_1.main import features_alignment
-from type_1.features import get_binned_coverage
+from type_1.features import get_binned_coverage, read_tree
 from type_1.models import AlignmentFeatures
 
 
@@ -23,15 +23,19 @@ def alignment_allpath_coverage() -> Path:
 def database_features() -> Path:
     return Path("fixtures") / Path("db_features.csv")
 
+@pytest.fixture()
+def tree() -> Path:
+    return Path("fixtures") / Path("r95.gtdb.tree")
+
 
 def test_alignment_length(alignment_allpath, database_features, tmp_path):
     outf = tmp_path / Path("features.txt")
-    features_alignment(database_features=database_features, alignment=alignment_allpath, outf=outf)
+    df = features_alignment(database_features=database_features, alignment=alignment_allpath, outf=outf)
 
 
 def test_alignment_coverage(alignment_allpath_coverage, database_features, tmp_path):
     outf = tmp_path / Path("features.txt")
-    features_alignment(database_features=database_features, alignment=alignment_allpath_coverage, outf=outf)
+    df = features_alignment(database_features=database_features, alignment=alignment_allpath_coverage, outf=outf)
 
 
 def test_undefined_shannon_entropy():
@@ -77,3 +81,17 @@ def test_binned_coverage():
     hist = get_binned_coverage(x, genome_size, num_bins=num_bins)
 
     assert hist.shape[0] == num_bins
+
+
+def test_tree_reading(tree):
+    tree = read_tree(tree)
+
+
+def test_alignment_coverage_tree(alignment_allpath, database_features, tree, tmp_path):
+    outf = tmp_path / Path("features.txt")
+    df = features_alignment(
+        database_features=database_features,
+        alignment=alignment_allpath,
+        newick_tree=tree,
+        outf=outf
+    )
