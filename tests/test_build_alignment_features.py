@@ -23,9 +23,15 @@ def alignment_allpath_coverage() -> Path:
 def database_features() -> Path:
     return Path("fixtures") / Path("db_features.csv")
 
+
 @pytest.fixture()
 def tree() -> Path:
     return Path("fixtures") / Path("r95.gtdb.tree")
+
+
+@pytest.fixture()
+def test_b6() -> Path:
+    return Path("fixtures") / Path("test.sort.b6")
 
 
 def test_alignment_length(alignment_allpath, database_features, tmp_path):
@@ -92,6 +98,16 @@ def test_alignment_coverage_tree(alignment_allpath, database_features, tree, tmp
     df = features_alignment(
         database_features=database_features,
         alignment=alignment_allpath,
+        newick_tree=tree,
+        outf=outf
+    )
+
+
+def test_alignment_full_tree(test_b6, database_features, tree, tmp_path):
+    outf = tmp_path / Path("features.txt")
+    df = features_alignment(
+        database_features=database_features,
+        alignment=test_b6,
         newick_tree=tree,
         outf=outf
     )

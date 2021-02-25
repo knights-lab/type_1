@@ -224,33 +224,48 @@ def read_tree(nw_path: Path) -> Tree:
         nw_tree = inf.readlines()
 
     t = Tree(nw_tree[0], format=3, quoted_node_names=True)
+    t.unroot()
     return t
+
+
+def get_closest_leave(leaves_to_index: set, prepostorder_leaves: list, tree: Tree, leave: str) -> Tuple[str, float, float]:
+    index = leaves_to_index[leave]
+    if index == 0:
+        closest = prepostorder_leaves[index + 1]
+    elif index == len(prepostorder_leaves) - 1:
+        closest = prepostorder_leaves[index - 1]
+    else:
+        leave_1 = prepostorder_leaves[index - 1]
+        leave_2 = prepostorder_leaves[index + 1]
+        dist_1 = tree.get_distance(leave_1, leave)
+        dist_2 = tree.get_distance(leave_2, leave)
+        if dist_1 < dist_2:
+            closest = leave_1
+        else:
+            closest = leave_2
+    if closest != leave:
+        dist = tree.get_distance(leave, closest)
+        top_distance = tree.get_distance(leave, closest, True)
+    else:
+        logger.warning(f"Nearest neighbor to node {leave} is itself!")
+        dist = 0
+        top_distance = 0
+    return closest, dist, top_distance
 
 
 def get_tree_based_features(df_features: pd.DataFrame, nw_path: Path) -> pd.DataFrame:
     tree = read_tree(nw_path)
 
-    pruned_tree = deepcopy(tree)
-
-    # leaves_names = set([_.name for _ in tree.get_leaves()])
-
     leaves_in_tree = set(df_features.assembly_accession)
 
-    # leaves_to_prune = leaves_names.difference(leaves_in_tree)
+    prepostorder_leaves = [_[1].name for _ in tree.iter_prepostorder() if _[1].name in leaves_in_tree]
 
-    pruned_tree.prune(leaves_in_tree, preserve_branch_length=True)
+    leaves_to_index = dict((reversed(_) for _ in enumerate(prepostorder_leaves)))
 
     results = []
     for leave in leaves_in_tree:
-        closest, dist = pruned_tree.get_closest_leaf(leave)
-        if closest.name != leave:
-            dist = tree.get_distance(leave, closest.name)
-            top_distance = tree.get_distance(leave, closest.name, True)
-        else:
-            logger.warning(f"Nearest neighbor to node {leave} is itself!")
-            dist = 0
-            top_distance = 0
-        results.append([leave, closest.name, dist, top_distance])
+        closest, dist, top_distance = get_closest_leave(leaves_to_index, prepostorder_leaves, tree, leave)
+        results.append([leave, closest, dist, top_distance])
     df_tree = pd.DataFrame(results, columns=["assembly_accession", "tree_closest_assembly_accession", "tree_dist", "tree_top_dist"])
     df_merged = pd.merge(df_tree, df_features, how="left", left_on="tree_closest_assembly_accession", right_on="assembly_accession", suffixes=('', "_DROP"))
     df_merged = df_merged.drop(columns=["assembly_accession_DROP"])
