@@ -4,9 +4,12 @@ import csv
 from collections import Counter, defaultdict
 import re
 
+from copy import deepcopy
+from ete3 import Tree
 import numpy as np
 import pandas as pd
 
+from type_1 import logger
 from type_1.utils import read_fasta
 from type_1.models import AlignmentFeatures, FastaFeatures
 
@@ -214,3 +217,43 @@ def gen_fasta_features(fasta: Path) -> Generator[FastaFeatures, None, None]:
                 assembly_accession=header
             )
             yield results
+
+
+def read_tree(nw_path: Path) -> Tree:
+    with open(nw_path) as inf:
+        nw_tree = inf.readlines()
+
+    t = Tree(nw_tree[0], format=3, quoted_node_names=True)
+    return t
+
+
+def get_tree_based_features(df_features: pd.DataFrame, nw_path: Path) -> pd.DataFrame:
+    tree = read_tree(nw_path)
+
+    pruned_tree = deepcopy(tree)
+
+    # leaves_names = set([_.name for _ in tree.get_leaves()])
+
+    leaves_in_tree = set(df_features.assembly_accession)
+
+    # leaves_to_prune = leaves_names.difference(leaves_in_tree)
+
+    pruned_tree.prune(leaves_in_tree, preserve_branch_length=True)
+
+    results = []
+    for leave in leaves_in_tree:
+        closest, dist = pruned_tree.get_closest_leaf(leave)
+        if closest.name != leave:
+            dist = tree.get_distance(leave, closest.name)
+            top_distance = tree.get_distance(leave, closest.name, True)
+        else:
+            logger.warning(f"Nearest neighbor to node {leave} is itself!")
+            dist = 0
+            top_distance = 0
+        results.append([leave, closest.name, dist, top_distance])
+    df_tree = pd.DataFrame(results, columns=["assembly_accession", "tree_closest_assembly_accession", "tree_dist", "tree_top_dist"])
+    df_merged = pd.merge(df_tree, df_features, how="left", left_on="tree_closest_assembly_accession", right_on="assembly_accession", suffixes=('', "_DROP"))
+    df_merged = df_merged.drop(columns=["assembly_accession_DROP"])
+    df_merged_2 = pd.merge(df_merged, df_features, how="inner", on="assembly_accession", suffixes=('', "_tree_x"))
+    df_merged_2.columns = ["tree_" + col.replace("_tree_x", "") if col.endswith("_tree_x") else col for col in df_merged_2.columns]
+    return df_merged_2

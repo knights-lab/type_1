@@ -62,6 +62,7 @@ fastq-dump --skip-technical  --readids --dumpbase --split-files --clip ERR298477
 
 ## fastq dumps dnanexus
 ```
+https://dl.dnanex.us/F/D/X3kyPyv0jQyJQYyQKJgyvG6z3fz9ZJZ12kP0zqVf/strains2_CHALLENGE_truth.txt?inline
 https://dl.dnanex.us/F/D/KVQYkZGb9V8yJ01v7BQfJzJXQF0bbzK670qBxQ3p/CS_1_1.fastq.gz
 https://dl.dnanex.us/F/D/4V6PQvqp5xFYbXGQj8JzVZBvZJyf8zJjZJVGZyF0/CS_1_2.fastq.gz
 https://dl.dnanex.us/F/D/jbf85846j5Zb8ZB14ff0pJBg1jZpQpJ4Xv41FPjB/CS_2_1.fastq.gz
