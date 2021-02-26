@@ -37,7 +37,7 @@ def features_alignment(database_features: Path, alignment: Path,  outf: Path, ne
 
 
 @app.command()
-def features_alignment_tree(df_features: Path, newick_tree: Path, outf: Path) -> pd.DataFrame:
+def features_tree(df_features: Path, newick_tree: Path, outf: Path) -> pd.DataFrame:
     df_features = pd.read_csv(
         df_features,
         index_col=0

@@ -4,7 +4,7 @@ import numpy as np
 
 import pytest
 
-from type_1.main import features_alignment
+from type_1.main import features_alignment, features_tree
 from type_1.features import get_binned_coverage, read_tree
 from type_1.models import AlignmentFeatures
 
@@ -32,6 +32,11 @@ def tree() -> Path:
 @pytest.fixture()
 def test_b6() -> Path:
     return Path("fixtures") / Path("test.sort.b6")
+
+
+@pytest.fixture()
+def gis_features() -> Path:
+    return Path("fixtures") / Path("gis.20.b6.extra.csv")
 
 
 def test_alignment_length(alignment_allpath, database_features, tmp_path):
@@ -108,6 +113,15 @@ def test_alignment_full_tree(test_b6, database_features, tree, tmp_path):
     df = features_alignment(
         database_features=database_features,
         alignment=test_b6,
+        newick_tree=tree,
+        outf=outf
+    )
+
+
+def test_gis_features(gis_features, tree, tmp_path):
+    outf = tmp_path / Path("features.tree.txt")
+    df = features_tree(
+        df_features=gis_features,
         newick_tree=tree,
         outf=outf
     )

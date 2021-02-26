@@ -228,7 +228,7 @@ def read_tree(nw_path: Path) -> Tree:
     return t
 
 
-def get_closest_leave(leaves_to_index: set, prepostorder_leaves: list, tree: Tree, leave: str) -> Tuple[str, float, float]:
+def get_closest_leave(leaves_to_index: dict, prepostorder_leaves: list, tree: Tree, leave: str) -> Tuple[str, float, float]:
     index = leaves_to_index[leave]
     if index == 0:
         closest = prepostorder_leaves[index + 1]
@@ -261,6 +261,12 @@ def get_tree_based_features(df_features: pd.DataFrame, nw_path: Path) -> pd.Data
     prepostorder_leaves = [_[1].name for _ in tree.iter_prepostorder() if _[1].name in leaves_in_tree]
 
     leaves_to_index = dict((reversed(_) for _ in enumerate(prepostorder_leaves)))
+
+    assert len(leaves_in_tree) == len(prepostorder_leaves) == len(leaves_to_index)
+
+    for leave in leaves_in_tree:
+        assert leave in leaves_in_tree
+        assert leave in prepostorder_leaves
 
     results = []
     for leave in leaves_in_tree:
