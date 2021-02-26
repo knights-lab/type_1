@@ -36,5 +36,18 @@ def features_alignment(database_features: Path, alignment: Path,  outf: Path, ne
     return df_merged
 
 
+@app.command()
+def features_alignment_tree(df_features: Path, newick_tree: Path, outf: Path) -> pd.DataFrame:
+    df_features = pd.read_csv(
+        df_features,
+        index_col=0
+    )
+
+    df_merged = get_tree_based_features(df_features, newick_tree)
+
+    df_merged.to_csv(outf)
+    return df_merged
+
+
 if __name__ == "__main__":
     app()
