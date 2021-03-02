@@ -262,12 +262,6 @@ def get_tree_based_features(df_features: pd.DataFrame, nw_path: Path) -> pd.Data
 
     leaves_to_index = dict((reversed(_) for _ in enumerate(prepostorder_leaves)))
 
-    assert len(leaves_in_tree) == len(prepostorder_leaves) == len(leaves_to_index)
-
-    for leave in leaves_in_tree:
-        assert leave in leaves_in_tree
-        assert leave in prepostorder_leaves
-
     results = []
     for leave in leaves_in_tree:
         closest, dist, top_distance = get_closest_leave(leaves_to_index, prepostorder_leaves, tree, leave)
@@ -275,6 +269,6 @@ def get_tree_based_features(df_features: pd.DataFrame, nw_path: Path) -> pd.Data
     df_tree = pd.DataFrame(results, columns=["assembly_accession", "tree_closest_assembly_accession", "tree_dist", "tree_top_dist"])
     df_merged = pd.merge(df_tree, df_features, how="left", left_on="tree_closest_assembly_accession", right_on="assembly_accession", suffixes=('', "_DROP"))
     df_merged = df_merged.drop(columns=["assembly_accession_DROP"])
-    df_merged_2 = pd.merge(df_merged, df_features, how="inner", on="assembly_accession", suffixes=('', "_tree_x"))
+    df_merged_2 = pd.merge(df_features, df_merged, how="inner", on="assembly_accession", suffixes=('', "_tree_x"))
     df_merged_2.columns = ["tree_" + col.replace("_tree_x", "") if col.endswith("_tree_x") else col for col in df_merged_2.columns]
     return df_merged_2
