@@ -17,14 +17,21 @@ def database_fasta(fasta: Path, outf: Path) -> pd.DataFrame:
 
 
 @app.command()
-def features_alignment(database_features: Path, alignment: Path,  outf: Path, newick_tree: Path = None) -> pd.DataFrame:
+def features_alignment(
+    database_features: Path, alignment: Path,
+    outf: Path, newick_tree: Path = None,
+    num_bins: int = 10_000
+) -> pd.DataFrame:
     df_database_features = pd.read_csv(
         database_features,
         index_col=0
     )
 
     df = pd.DataFrame(
-        (model.dict() for model in gen_blast_features(df_database_features=df_database_features, alignment_allpath=alignment))
+        (model.dict() for model in gen_blast_features(
+            df_database_features=df_database_features,
+            alignment_allpath=alignment,
+            num_bins=num_bins))
     )
 
     df_merged = pd.merge(df, df_database_features, on="assembly_accession", how="left")
