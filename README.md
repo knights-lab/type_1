@@ -52,7 +52,7 @@ mkdir fna & mv *.gz fna & cd fna & printf '%s\0' *.gz | xargs -r0 -n 1 -P 16 gun
 
 ## fastq dumps
 ```
-fastq-dump --skip-technical  --readids --dumpbase --split-files --clip
+fastq-dump 
 fastq-dump --skip-technical  --readids --dumpbase --split-files --clip SRR8073716:
 fastq-dump --skip-technical  --readids --dumpbase --split-files --clip ERR3200809;
 fastq-dump --skip-technical  --readids --dumpbase --split-files --clip ERR2835738;
