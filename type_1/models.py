@@ -1,5 +1,9 @@
+import pandas as pd
 from pydantic import BaseModel, validator
+from pathlib import Path
 
+from ete3 import Tree
+from sklearn.base import BaseEstimator
 import numpy as np
 
 
@@ -66,4 +70,13 @@ class AlignmentFeatures(BaseModel):
         'largest_binned_pileup', allow_reuse=True)(greater_than_or_equal_to_zero)
     _is_finite = validator('sd_coverage', 'shannon_entropy', allow_reuse=True)(is_finite)
 
+
+class T1Database(BaseModel):
+    path: Path
+    tree: Tree
+    classifier: BaseEstimator
+    database_metadata: pd.DataFrame
+
+    class Config:
+        arbitrary_types_allowed = True
 

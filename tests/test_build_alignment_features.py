@@ -21,22 +21,22 @@ def alignment_allpath_coverage() -> Path:
 
 @pytest.fixture()
 def database_features() -> Path:
-    return Path("fixtures") / Path("db_features.csv")
+    return Path("fixtures") / Path("fixtures/database/db_features.csv")
 
 
 @pytest.fixture()
 def tree() -> Path:
-    return Path("fixtures") / Path("r95.gtdb.tree")
+    return Path("fixtures") / Path("database/r95.gtdb.tree")
 
 
 @pytest.fixture()
 def test_b6() -> Path:
-    return Path("fixtures") / Path("test.sort.b6")
+    return Path("fixtures") / Path("test.sort.1k.b6")
 
 
 @pytest.fixture()
 def gis_features() -> Path:
-    return Path("fixtures") / Path("gis.20.b6.extra.csv")
+    return Path("fixtures") / Path("gis.20.100.b6.extra.csv")
 
 
 def test_alignment_length(alignment_allpath, database_features, tmp_path):

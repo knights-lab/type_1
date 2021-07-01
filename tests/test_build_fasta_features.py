@@ -12,7 +12,7 @@ from type_1.utils import read_fasta
 
 @pytest.fixture
 def gtdb_20_database() -> Union[str, pathlib.Path]:
-    return os.path.join("fixtures", "gtdb_20.fna")
+    return os.path.join("fixtures", "fixtures/gtdb_20.fna")
 
 
 def test_genome_length(gtdb_20_database):

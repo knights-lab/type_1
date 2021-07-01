@@ -56,5 +56,11 @@ def features_tree(df_features: Path, newick_tree: Path, outf: Path) -> pd.DataFr
     return df_merged
 
 
+@app.command()
+def filter_alignment(database_folder: Path, output_folder: Path) -> pd.DataFrame:
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+
 if __name__ == "__main__":
     app()
