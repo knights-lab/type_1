@@ -6,7 +6,7 @@ import typer
 
 from type_1.database import build_database
 from type_1.features import gen_blast_features, gen_fasta_features, get_tree_based_features
-from type_1.models import T1Database
+from type_1.models import T1Database, CLASSIFIER_FEATURES
 
 app = typer.Typer()
 
@@ -72,10 +72,18 @@ def filter_alignment(database_path: Path, alignment: Path, output_folder: Path, 
     db = build_database(database_path)
     df_merged = _get_features(db, alignment, num_bins=num_bins)
 
-    COLUMNS = [
-        ""
-    ]
+    df_merged['relative_abundance'] = df_merged['hits'] / df_merged.groupby('dataset')[
+        'hits'].transform('sum')
 
+    predictions = db.classifier.predict(df_merged[CLASSIFIER_FEATURES])
+
+    prob_predictions = db.classifier.predict_proba(df_merged[CLASSIFIER_FEATURES])[:, 1]
+
+    df_merged['predictions'] = predictions
+
+    df_merged['predictions_proba'] = prob_predictions
+
+    df_merged.to_csv(output_folder / Path("predictions.csv"))
     return df_merged
 
 
