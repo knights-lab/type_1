@@ -14,5 +14,6 @@ dependencies:
   - typer
   - pytest
   - ete3
+  - joblib
   - pip:
     - "git+https://github.com/knights-lab/type_1.git"

@@ -1,3 +1,4 @@
+from typing import Tuple
 from pathlib import Path
 
 from type_1 import logger
