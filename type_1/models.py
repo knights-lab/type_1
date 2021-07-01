@@ -6,6 +6,43 @@ from ete3 import Tree
 from sklearn.base import BaseEstimator
 import numpy as np
 
+CLASSIFIER_FEATURES = (
+    'hits',
+    'percent_coverage',
+    'mean_coverage',
+    'sd_coverage',
+    'percent_binned_coverage',
+    'mean_binned_coverage',
+    'sd_binned_coverage',
+    'expected_percent_coverage',
+    'shannon_entropy',
+    'percent_max_uncovered_region',
+    'largest_pileup',
+    'largest_binned_pileup',
+    'gc_content',
+    'total_genome_length',
+    'ungapped_genome_length',
+    'num_n_groups',
+    'consecutive_ns',
+    'gf_checkm_completeness',
+    'gf_checkm_contamination',
+    'relative_abundance',
+    'tree_hits',
+    'tree_percent_coverage',
+    'tree_mean_coverage',
+    'tree_sd_coverage',
+    'tree_percent_binned_coverage',
+    'tree_mean_binned_coverage',
+    'tree_sd_binned_coverage',
+    'tree_expected_percent_coverage',
+    'tree_shannon_entropy',
+    'tree_percent_max_uncovered_region',
+    'tree_largest_pileup',
+    'tree_largest_binned_pileup',
+    'tree_dist',
+    'tree_top_dist'
+)
+
 
 def between_zero_and_one(value: float) -> float:
     if 0 < value > 1:

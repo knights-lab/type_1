@@ -10,6 +10,7 @@ import pandas as pd
 from type_1 import logger
 from type_1.utils import read_fasta
 from type_1.models import AlignmentFeatures, FastaFeatures, T1Database
+from type_1.tree import get_closest_leave
 
 
 def genome_length(seq: str) -> int:
@@ -217,7 +218,7 @@ def gen_fasta_features(fasta: Path) -> Generator[FastaFeatures, None, None]:
             yield results
 
 
-def get_tree_based_features(df_features: pd.DataFrame, database: T1Database) -> pd.DataFrame:
+def get_tree_based_features(df_features: pd.DataFrame, tree: Tree) -> pd.DataFrame:
     leaves_in_tree = set(df_features.assembly_accession)
 
     prepostorder_leaves = [_[1].name for _ in tree.iter_prepostorder() if _[1].name in leaves_in_tree]
