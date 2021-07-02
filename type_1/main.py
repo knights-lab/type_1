@@ -45,7 +45,7 @@ def _get_features(
 
     df_merged = pd.merge(df, db.database_metadata, on="assembly_accession", how="left")
 
-    df_merged = get_tree_based_features(df_merged, df.tree)
+    df_merged = get_tree_based_features(df_merged, db.tree)
 
     return df_merged
 
@@ -72,8 +72,7 @@ def filter_alignment(database_path: Path, alignment: Path, output_folder: Path, 
     db = build_database(database_path)
     df_merged = _get_features(db, alignment, num_bins=num_bins)
 
-    df_merged['relative_abundance'] = df_merged['hits'] / df_merged.groupby('dataset')[
-        'hits'].transform('sum')
+    df_merged['relative_abundance'] = df_merged['hits'] / df_merged['hits'].sum()
 
     predictions = db.classifier.predict(df_merged[CLASSIFIER_FEATURES])
 

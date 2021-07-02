@@ -21,7 +21,7 @@ def alignment_allpath_coverage() -> Path:
 
 @pytest.fixture()
 def database_features() -> Path:
-    return Path("fixtures") / Path("fixtures/database/db_features.csv")
+    return Path("fixtures") / Path("database/db_features.csv")
 
 
 @pytest.fixture()

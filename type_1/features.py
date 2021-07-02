@@ -6,6 +6,7 @@ import re
 
 import numpy as np
 import pandas as pd
+from ete3 import Tree
 
 from type_1 import logger
 from type_1.utils import read_fasta

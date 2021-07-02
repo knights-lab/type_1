@@ -6,7 +6,7 @@ from ete3 import Tree
 from sklearn.base import BaseEstimator
 import numpy as np
 
-CLASSIFIER_FEATURES = (
+CLASSIFIER_FEATURES = [
     'hits',
     'percent_coverage',
     'mean_coverage',
@@ -41,7 +41,7 @@ CLASSIFIER_FEATURES = (
     'tree_largest_binned_pileup',
     'tree_dist',
     'tree_top_dist'
-)
+]
 
 
 def between_zero_and_one(value: float) -> float:
