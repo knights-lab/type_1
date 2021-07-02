@@ -1,13 +1,14 @@
 """
-Copyright 2020 Knights Lab, Regents of the University of Minnesota.
+Copyright 2021 Knights Lab, Regents of the University of Minnesota.
 
 This software is released under the GNU Affero General Public License (AGPL) v3.0 License.
 """
 
 from setuptools import setup, find_packages
+import versioneer
 
 __author__ = "Knights Lab"
-__copyright__ = "Copyright (c) 2020 --, %s" % __author__
+__copyright__ = "Copyright (c) 2021 --, %s" % __author__
 __credits__ = ["Benjamin Hillmann"]
 __email__ = "hillm096@cs.umn.edu"
 __license__ = "AGPL"
@@ -17,8 +18,8 @@ long_description = ''
 
 setup(
     name='type_1',
-    # version=versioneer.get_version(),
-    # cmdclass=versioneer.get_cmdclass(),
+    version=versioneer.get_version(),
+    cmdclass=versioneer.get_cmdclass(),
     packages=find_packages(exclude=[]),
     url='',
     license=__license__,
@@ -29,7 +30,9 @@ setup(
     keywords='',
     install_requires=[],
     entry_points={
-        'console_scripts': []
+        'console_scripts': [
+            'type_1 = type_1.__main__:app'
+        ]
     },
     extras_require={
         'develop': ['ipython', 'ipdb'],
