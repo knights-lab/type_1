@@ -1,10 +1,9 @@
 from pathlib import Path
 import os
-
 import pandas as pd
 import typer
 
-from type_1.database import build_database
+from type_1.database import build_database, annotate_gtdb_features
 from type_1.features import gen_blast_features, gen_fasta_features, get_tree_based_features
 from type_1.models import T1Database, CLASSIFIER_FEATURES
 
@@ -12,8 +11,11 @@ app = typer.Typer()
 
 
 @app.command()
-def database_fasta(fasta: Path, outf: Path) -> pd.DataFrame:
+def database_fasta(fasta: Path, bacteria_metadata: Path, archaea_metadata: Path, outf: Path) -> pd.DataFrame:
     df = pd.DataFrame((model.dict() for model in gen_fasta_features(fasta)))
+
+    df = annotate_gtdb_features(df, bacteria_metadata, archaea_metadata)
+
     df.to_csv(outf)
     return df
 

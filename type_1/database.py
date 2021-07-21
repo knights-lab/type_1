@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 import pandas as pd
@@ -19,3 +18,17 @@ def build_database(dir: Path) -> T1Database:
         database_metadata=db_features,
         tree=tree
     )
+
+
+def annotate_gtdb_features(df_metadata: pd.DataFrame, bacteria_metadata: Path, archaea_metadata: Path) -> pd.DataFrame:
+    df_bac = pd.read_csv(bacteria_metadata, sep="\t")
+    df_arch = pd.read_csv(archaea_metadata, sep="\t")
+
+    df = pd.concat((df_arch, df_bac))
+
+    df.columns = ["gf_" + col for col in df.columns]
+
+    df['assembly_accession'] = [_.replace("GB_", "").replace("RS_", "") for _ in df['gf_accession']]
+
+    df_merged = pd.merge(df_metadata, df, on="assembly_accession")
+    return df_merged
