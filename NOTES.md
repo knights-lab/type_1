@@ -221,3 +221,9 @@ Downloading the strains:
 This didn't work, trying the next thing.
 
 
+### Karlsson
+```
+cd /mnt/btrfs/data/karlsson
+cut -f1 ./ftp_links.txt | tail -n +2 > accessions.txt
+cat accessions.txt | xargs -n 1 -P 16 fastq-dump --skip-technical --readids --dumpbase --split-files --gzip --clip
+```
